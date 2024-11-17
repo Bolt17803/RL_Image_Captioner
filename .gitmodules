@@ -1,0 +1,6 @@
+[submodule "indic"]
+	path = indic
+	url = https://github.com/AI4Bharat/indicTrans.git
+[submodule "indictrans"]
+	path = indictrans
+	url = https://github.com/AI4Bharat/indicTrans.git
