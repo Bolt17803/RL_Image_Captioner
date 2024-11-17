@@ -1,6 +1,3 @@
 [submodule "indic"]
 	path = indic
 	url = https://github.com/AI4Bharat/indicTrans.git
-[submodule "hi"]
-	path = hi
-	url = https://github.com/VarunGumma/IndicTransToolkit.git
