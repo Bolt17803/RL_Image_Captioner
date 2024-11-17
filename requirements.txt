@@ -3,3 +3,8 @@ transformers
 torch
 pillow
 gtts
+torchvision
+matplotlib
+scikit-image
+torchvision
+nltk
