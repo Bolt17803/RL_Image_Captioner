@@ -8,7 +8,7 @@ from io import BytesIO
 #----------------------captioner imports----------
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
 import torch
-from IndicTransToolkit.IndicTransToolkit import IndicProcessor
+from hi.IndicTransToolkit import IndicProcessor
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from PIL import Image
 #-------------------------------------------------
