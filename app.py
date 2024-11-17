@@ -4,16 +4,44 @@ from gtts import gTTS
 import torch
 from PIL import Image
 from io import BytesIO
+#----------------------captioner imports----------
+import json
+from decoder import Decoder
+from encoder import Encoder
+from dataset import pil_loader
+from train import data_transforms
+#-------------------------------------------------
 
 # Load BLIP model and processor
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
+
 # Function to generate captions
-def generate_caption(image):
-    inputs = processor(image, return_tensors="pt")
-    out = model.generate(**inputs)
-    caption = processor.decode(out[0], skip_special_tokens=True)
+def generate_caption(img):
+    # initiaziling vocab
+    word_dict = json.load(open('word_dict.json', 'r'))
+    vocabulary_size = len(word_dict)
+    encoder = Encoder(network='vgg19')
+    decoder = Decoder(vocabulary_size, encoder.dim)
+    decoder.load_state_dict(torch.load('model_10.pth', map_location=torch.device('cpu')))
+    encoder.eval()
+    decoder.eval()
+
+    img = data_transforms(img)
+    img = torch.FloatTensor(img)
+    img = img.unsqueeze(0)
+    img_features = encoder(img)
+    beam_size=3
+    img_features = img_features.expand(beam_size, img_features.size(1), img_features.size(2))
+    sentence, alpha = decoder.caption(img_features, beam_size)
+    token_dict = {idx: word for word, idx in word_dict.items()}
+    sentence_tokens=[]
+    for word_idx in sentence:
+        sentence_tokens.append(token_dict[word_idx])
+        if word_idx == word_dict['<eos>']:
+            break
+    caption = " ".join(sentence_tokens[1:-1])
     return caption
 
 # Streamlit Title
@@ -29,6 +57,7 @@ if uploaded_file is not None:
     # Generate and Display Caption
     st.write("Generating caption...")
     caption = generate_caption(image)
+    # caption = "पृष्ठभूमि में एक पहाड़ और एक बड़े नीले आकाश के साथ एक नदी का दृश्य"
     st.write(f"**Caption**: {caption}")
 
     # Text-to-Audio Conversion
